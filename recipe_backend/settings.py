@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-b=92o#a*gdlqh(8%+-2xzex7hz=zo1f1w1&ej*18o1hg_tm4nv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -145,13 +145,17 @@ USE_I18N = True
 
 USE_TZ = True
 
+MIDDLEWARE.insert(0, "corsheaders.middleware.CorsMiddleware")
+
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins (for development)
 
 # OR restrict to specific origins (for production)
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8100",  # Ionic app URL
+    "http://localhost:8100",  # Ionic local server
+    "http://192.168.145.221:8000"  # Your network IP
 ]
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -162,3 +166,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
