@@ -1,60 +1,44 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from recipe_api.models import Recipe
-from recipe_api.serializers import RecipeSerializer
+from recipe_api.models import UserDetails, RecipeApiUserDetails
+from recipe_api.serializers import UserRegisterSerializer, RecipeApiUserDetailsSerializer
+from rest_framework.permissions import IsAuthenticated
 
-# Create Recipe
-class RecipeCreateAPIView(APIView):
-    def post(self, request):
-        serializer = RecipeSerializer(data=request.data)
+class UpdateUserDetailsAPIView(APIView):
+    permission_classes = [IsAuthenticated]  
+
+    def put(self, request):
+        user = request.user  # Get logged-in user
+
+        try:
+            user_details = UserDetails.objects.get(user=user)
+        except UserDetails.DoesNotExist:
+            return Response({"message": "User details not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update `UserDetails` Model
+        serializer = UserRegisterSerializer(user_details, data=request.data, partial=True)
+
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            # Update `User` Model separately (no duplicate checking)
+            user.username = request.data.get('username', user.username)
+            user.email = request.data.get('email', user.email)
+            user.first_name = request.data.get('firstname', user.first_name)
+            user.last_name = request.data.get('lastname', user.last_name)
+            user.save()
+
+            return Response({"message": "User details updated successfully!"}, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Read (Get all Recipes)
-class RecipeListAPIView(APIView):
-    def get(self, request):
-        recipes = Recipe.objects.all()
-        if not recipes:
-            return Response({"message": "No recipes found."}, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = RecipeSerializer(recipes, many=True)
-        return Response(serializer.data)
 
-# Read (Get a single Recipe)
-class RecipeDetailAPIView(APIView):
-    def get(self, request, pk):
+class UserDetailsView(APIView):
+    def get(self, request, user_id):
         try:
-            recipe = Recipe.objects.get(pk=pk)
-        except Recipe.DoesNotExist:
-            return Response({"message": "Recipe not found."}, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = RecipeSerializer(recipe)
-        return Response(serializer.data)
-
-# Update Recipe
-class RecipeUpdateAPIView(APIView):
-    def put(self, request, pk):
-        try:
-            recipe = Recipe.objects.get(pk=pk)
-        except Recipe.DoesNotExist:
-            return Response({"message": "Recipe not found."}, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = RecipeSerializer(recipe, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+            user_details = RecipeApiUserDetails.objects.get(user_id=user_id)
+            serializer = RecipeApiUserDetailsSerializer(user_details)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# Delete Recipe
-class RecipeDeleteAPIView(APIView):
-    def delete(self, request, pk):
-        try:
-            recipe = Recipe.objects.get(pk=pk)
-        except Recipe.DoesNotExist:
-            return Response({"message": "Recipe not found."}, status=status.HTTP_404_NOT_FOUND)
-        
-        recipe.delete()
-        return Response({"message": "Recipe deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except RecipeApiUserDetails.DoesNotExist:
+            return Response({"error": "User details not found"}, status=404)
