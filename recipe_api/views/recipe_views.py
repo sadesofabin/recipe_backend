@@ -1,9 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from recipe_api.models import UserDetails, RecipeApiUserDetails
-from recipe_api.serializers import UserRegisterSerializer, RecipeApiUserDetailsSerializer
+from recipe_api.models import UserDetails
+from recipe_api.serializers import UserRegisterSerializer, UserSerializer
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
 
 class UpdateUserDetailsAPIView(APIView):
     permission_classes = [IsAuthenticated]  
@@ -34,11 +35,12 @@ class UpdateUserDetailsAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserDetailsView(APIView):
+class UserProfileView(APIView):
     def get(self, request, user_id):
         try:
-            user_details = RecipeApiUserDetails.objects.get(user_id=user_id)
-            serializer = RecipeApiUserDetailsSerializer(user_details)
-            return Response(serializer.data)
-        except RecipeApiUserDetails.DoesNotExist:
-            return Response({"error": "User details not found"}, status=404)
+            # Using select_related to fetch the profile with the user in one query
+            user = User.objects.select_related('profile').get(id=user_id)
+            serializer = UserSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from recipe_api.models import UserDetails, RecipeApiUserDetails
+from recipe_api.models import UserDetails, UserProfile, SavedRecipe
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     firstname = serializers.CharField(required=False, allow_blank=True)
@@ -37,11 +37,21 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         return user
 
-class RecipeApiUserDetailsSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
-    email = serializers.EmailField(source='user.email', read_only=True)
+
+class UserProfileSerializer(serializers.ModelSerializer):  # Renamed serializer
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+class UserSerializer(serializers.ModelSerializer):
+    profile = UserProfileSerializer()  # Updated related name
 
     class Meta:
-        model = RecipeApiUserDetails
-        fields = ['username', 'email', 'additional_info']
+        model = User
+        fields = ['id', 'username', 'email', 'profile']
 
+
+class SavedRecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SavedRecipe
+        fields = ['id','user', 'title', 'ingredients', 'instructions', 'created_at', 'updated_at', 'deleted_at']

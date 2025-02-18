@@ -14,6 +14,22 @@ class UserDetails(models.Model):
         return self.user.username  
 
 
-class RecipeApiUserDetails(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Links to auth_user
-    additional_info = models.TextField()  # Example field
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+
+class SavedRecipe(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_recipes')
+    title = models.CharField(max_length=255)  # Title of the saved recipe
+    ingredients = models.TextField()  # Ingredients for the recipe
+    instructions = models.TextField()  # Cooking instructions
+    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when saved
+    updated_at = models.DateTimeField(auto_now=True)  # Timestamp when last updated
+    deleted_at = models.DateTimeField(null=True, blank=True)  # Timestamp for when the recipe is deleted
+
+    class Meta:
+        db_table = 'saved_recipes'  # Optional: Specify the table name if you want to customize it
+    
+    def __str__(self):
+        return f"Saved Recipe: {self.title} by {self.user.username}"
