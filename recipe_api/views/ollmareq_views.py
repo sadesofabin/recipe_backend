@@ -5,6 +5,7 @@ import json
 import re
 
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
+print(OLLAMA_API_URL)
 
 @csrf_exempt
 def generate_response(request):

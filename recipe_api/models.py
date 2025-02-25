@@ -24,6 +24,7 @@ class SavedRecipe(models.Model):
     title = models.CharField(max_length=255)  # Title of the saved recipe
     ingredients = models.TextField()  # Ingredients for the recipe
     instructions = models.TextField()  # Cooking instructions
+    image = models.CharField(max_length=500, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when saved
     updated_at = models.DateTimeField(auto_now=True)  # Timestamp when last updated
     deleted_at = models.DateTimeField(null=True, blank=True)  # Timestamp for when the recipe is deleted

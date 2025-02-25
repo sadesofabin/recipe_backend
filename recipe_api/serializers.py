@@ -55,3 +55,8 @@ class SavedRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SavedRecipe
         fields = ['id','user', 'title', 'ingredients', 'instructions', 'created_at', 'updated_at', 'deleted_at']
+
+class UserDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserDetails
+        fields = '__all__'  # Or specify fields manually
