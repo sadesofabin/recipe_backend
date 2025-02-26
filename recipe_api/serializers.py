@@ -54,7 +54,7 @@ class UserSerializer(serializers.ModelSerializer):
 class SavedRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SavedRecipe
-        fields = ['id','user', 'title', 'ingredients', 'instructions', 'created_at', 'updated_at', 'deleted_at']
+        fields = ['id','user', 'title','image', 'ingredients', 'instructions', 'created_at', 'updated_at', 'deleted_at']
 
 class UserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
