@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-b=92o#a*gdlqh(8%+-2xzex7hz=zo1f1w1&ej*18o1hg_tm4nv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['192.168.1.3', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -152,8 +152,9 @@ CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins (for development)
 
 # OR restrict to specific origins (for production)
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8100",  # Ionic local server
-    "http://192.168.145.221:8000"  # Your network IP
+    "http://192.168.1.3:8000",  # Your backend server IP
+    "http://localhost:8100",    # Local development
+    "http://127.0.0.1:8000"  # Your network IP
 ]
 
 
